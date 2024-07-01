@@ -1,1 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meme Craft</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .game-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .elements, .inventory {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .element, .comb-slot {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .element:hover, .comb-slot:hover {
+            background: #0056b3;
+        }
+
+        .combine-area {
+            margin-bottom: 20px;
+        }
+
+        button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #218838;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-around;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Meme Craft</h1>
+        <div class="elements">
+            <div class="element" data-element="skibidi-toilet">Skibidi Toilet</div>
+            <div class="element" data-element="rizz">Rizz</div>
+        </div>
+        <div class="combine-area">
+            <h2>Combine Elements</h2>
+            <div class="combination">
+                <div class="comb-slot" id="comb-slot-1"></div>
+                <div class="comb-slot" id="comb-slot-2"></div>
+            </div>
+            <button id="combine-btn">Combine</button>
+        </div>
+        <div class="inventory">
+            <h2>Your Inventory</h2>
+            <div id="inventory-container"></div>
+        </div>
+        <div class="controls">
+            <button id="clear-btn">Clear</button>
+            <button id="reset-btn">Reset</button>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const elements = document.querySelectorAll('.element');
+            const combSlots = document.querySelectorAll('.comb-slot');
+            const combineBtn = document.getElementById('combine-btn');
+            const clearBtn = document.getElementById('clear-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const inventoryContainer = document.getElementById('inventory-container');
+            let inventory = new Set();
+
+            const combinations = generateCombinations();
+
+            function generateCombinations() {
+                const items = ["Skibidi Toilet", "Rizz", "Ohio", "Gyatt", "Edging", "Mewing", "Aura", "Sus", "Drip", "Bet"];
+                const combs = {};
+                let counter = 0;
+
+                for (let i = 0; i < items.length; i++) {
+                    for (let j = i + 1; j < items.length; j++) {
+                        if (counter >= 1000) break;
+                        combs[`${items[i].toLowerCase()}+${items[j].toLowerCase()}`] = `${items[i]} ${items[j]} Combo ${counter}`;
+                        counter++;
+                    }
+                }
+                return combs;
+            }
+
+            elements.forEach(element => {
+                element.addEventListener('click', () => {
+                    addToCombSlot(element);
+                });
+            });
+
+            combineBtn.addEventListener('click', () => {
+                combineElements();
+            });
+
+            clearBtn.addEventListener('click', () => {
+                clearCombSlots();
+            });
+
+            resetBtn.addEventListener('click', () => {
+                resetGame();
+            });
+
+            function addToCombSlot(element) {
+                const emptySlot = Array.from(combSlots).find(slot => !slot.textContent);
+                if (emptySlot) {
+                    emptySlot.textContent = element.textContent;
+                    emptySlot.dataset.element = element.dataset.element;
+                }
+            }
+
+            function combineElements() {
+                const slot1 = combSlots[0].dataset.element;
+                const slot2 = combSlots[1].dataset.element;
+                if (slot1 && slot2) {
+                    const result = combinations[`${slot1}+${slot2}`] || combinations[`${slot2}+${slot1}`];
+                    if (result) {
+                        inventory.add(result);
+                        updateInventory();
+                        clearCombSlots();
+                    } else {
+                        alert('Combination does not exist!');
+                    }
+                }
+            }
+
+            function clearCombSlots() {
+                combSlots.forEach(slot => {
+                    slot.textContent = '';
+                    delete slot.dataset.element;
+                });
+            }
+
+            function resetGame() {
+                inventory.clear();
+                updateInventory();
+                clearCombSlots();
+            }
+
+            function updateInventory() {
+                inventoryContainer.innerHTML = '';
+                inventory.forEach(item => {
+                    const div = document.createElement('div');
+                    div.classList.add('element');
+                    div.textContent = item;
+                    inventoryContainer.appendChild(div);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
 
